@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type ServiceType =
   | "Domestic Cleaning"
@@ -11,13 +11,19 @@ type ServiceType =
   | "Deep Cleaning"
   | "";
 
+type PropertyCondition = "Existing" | "New Build" | "Renovated";
+type SuppliesOption = "Customer Provides" | "We Provide";
+
 type PricingForm = {
   service: ServiceType;
   propertyType: string;
+  condition: PropertyCondition;
+  supplies: SuppliesOption;
   hours: number;
   rooms: number;
   bathrooms: number;
   toilets: number;
+  drainage: boolean;
   extras: string[];
   notes: string;
   name: string;
@@ -38,7 +44,7 @@ const extraOptions = [
 ];
 
 const serviceRates: Record<ServiceType, number> = {
-  "Domestic Cleaning": 18,
+  "Domestic Cleaning": 20,
   "Airbnb Cleaning": 45,
   "Office Cleaning": 22,
   "Hotel Cleaning": 25,
@@ -51,10 +57,13 @@ export default function PricingPage() {
   const [form, setForm] = useState<PricingForm>({
     service: "",
     propertyType: "",
+    condition: "Existing",
+    supplies: "Customer Provides",
     hours: 1,
     rooms: 0,
     bathrooms: 0,
     toilets: 0,
+    drainage: false,
     extras: [],
     notes: "",
     name: "",
@@ -66,6 +75,44 @@ export default function PricingPage() {
     bookingTime: "",
   });
 
+  const inputStyle =
+    "w-full mt-2 p-3 border border-slate-300 rounded-md bg-slate-50 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
+
+  // ⭐ Auto-set minimum hours based on rooms, bathrooms, toilets, condition, drainage
+  const calculateMinimumHours = () => {
+    let hours = 1;
+
+    // Rooms
+    if (form.rooms <= 1) hours = 1;
+    else if (form.rooms <= 2) hours = 2;
+    else if (form.rooms <= 3) hours = 3;
+    else if (form.rooms <= 4) hours = 3.5;
+    else if (form.rooms <= 6) hours = 4;
+    else hours = 5;
+
+    // Bathrooms
+    hours += form.bathrooms * 0.5;
+
+    // Toilets
+    hours += form.toilets * 0.25;
+
+    // Property condition
+    if (form.condition === "New Build") hours += 1;
+    if (form.condition === "Renovated") hours += 2;
+
+    // Drainage cleaning
+    if (form.drainage) hours += 1;
+
+    return hours;
+  };
+
+  useEffect(() => {
+    const minHours = calculateMinimumHours();
+    if (form.hours < minHours) {
+      setForm((prev) => ({ ...prev, hours: minHours }));
+    }
+  }, [form.rooms, form.bathrooms, form.toilets, form.condition, form.drainage]);
+
   const toggleExtra = (extra: string) => {
     setForm((prev) => ({
       ...prev,
@@ -75,12 +122,33 @@ export default function PricingPage() {
     }));
   };
 
+  // ⭐ Corrected pricing logic
   const calculateTotal = () => {
-    let base = form.service ? serviceRates[form.service] * form.hours : 0;
-    base += form.rooms * 5;
-    base += form.bathrooms * 10;
-    base += form.toilets * 5;
+    if (
+      form.service === "Hotel Cleaning" ||
+      form.service === "Commercial Cleaning" ||
+      form.service === "Office Cleaning"
+    ) {
+      return "Contact us for a quote";
+    }
 
+    let base = form.service ? serviceRates[form.service] * form.hours : 0;
+
+    const rooms = Math.min(form.rooms, 10);
+    const bathrooms = Math.min(form.bathrooms, 5);
+    const toilets = Math.min(form.toilets, 5);
+
+    base += rooms * 5;
+    base += bathrooms * 10;
+    base += toilets * 5;
+
+    // Drainage cleaning
+    if (form.drainage) base += 20;
+
+    // Supplies
+    if (form.supplies === "We Provide") base += 15;
+
+    // Extras
     form.extras.forEach((extra) => {
       const item = extraOptions.find((x) => x.name === extra);
       if (item) base += item.price;
@@ -102,6 +170,8 @@ export default function PricingPage() {
 🏠 Address: ${form.address}
 🔢 Postcode: ${form.postcode}
 🏢 Property Type: ${form.propertyType}
+🏗 Condition: ${form.condition}
+🧴 Supplies: ${form.supplies}
 
 🧹 Service Type: ${form.service}
 ⏱ Hours Needed: ${form.hours}
@@ -109,6 +179,7 @@ export default function PricingPage() {
 🛏 Rooms: ${form.rooms}
 🚿 Bathrooms: ${form.bathrooms}
 🚽 Toilets: ${form.toilets}
+🕳 Drainage Cleaning: ${form.drainage ? "Yes" : "No"}
 
 ✨ Extras: ${form.extras.join(", ") || "None"}
 
@@ -141,7 +212,7 @@ Please confirm availability.
           <div>
             <label className="font-semibold">Service Type</label>
             <select
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
               value={form.service}
               onChange={(e) =>
                 setForm({ ...form, service: e.target.value as ServiceType })
@@ -159,18 +230,44 @@ Please confirm availability.
 
             <label className="font-semibold mt-6 block">Property Type</label>
             <input
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
+              placeholder="e.g. Flat, House, Studio"
               value={form.propertyType}
               onChange={(e) =>
                 setForm({ ...form, propertyType: e.target.value })
               }
             />
 
+            <label className="font-semibold mt-6 block">Property Condition</label>
+            <select
+              className={inputStyle}
+              value={form.condition}
+              onChange={(e) =>
+                setForm({ ...form, condition: e.target.value as PropertyCondition })
+              }
+            >
+              <option>Existing</option>
+              <option>New Build</option>
+              <option>Renovated</option>
+            </select>
+
+            <label className="font-semibold mt-6 block">Supplies</label>
+            <select
+              className={inputStyle}
+              value={form.supplies}
+              onChange={(e) =>
+                setForm({ ...form, supplies: e.target.value as SuppliesOption })
+              }
+            >
+              <option>Customer Provides</option>
+              <option>We Provide</option>
+            </select>
+
             <label className="font-semibold mt-6 block">Hours Needed</label>
             <input
               type="number"
-              min={1}
-              className="w-full mt-2 p-3 border rounded-md"
+              min={calculateMinimumHours()}
+              className={inputStyle}
               value={form.hours}
               onChange={(e) =>
                 setForm({ ...form, hours: Number(e.target.value) })
@@ -181,7 +278,9 @@ Please confirm availability.
             <input
               type="number"
               min={0}
-              className="w-full mt-2 p-3 border rounded-md"
+              max={10}
+              className={inputStyle}
+              placeholder="e.g. 2"
               value={form.rooms}
               onChange={(e) =>
                 setForm({ ...form, rooms: Number(e.target.value) })
@@ -192,7 +291,9 @@ Please confirm availability.
             <input
               type="number"
               min={0}
-              className="w-full mt-2 p-3 border rounded-md"
+              max={5}
+              className={inputStyle}
+              placeholder="e.g. 1"
               value={form.bathrooms}
               onChange={(e) =>
                 setForm({ ...form, bathrooms: Number(e.target.value) })
@@ -203,12 +304,26 @@ Please confirm availability.
             <input
               type="number"
               min={0}
-              className="w-full mt-2 p-3 border rounded-md"
+              max={5}
+              className={inputStyle}
+              placeholder="e.g. 1"
               value={form.toilets}
               onChange={(e) =>
                 setForm({ ...form, toilets: Number(e.target.value) })
               }
             />
+
+            <label className="font-semibold mt-6 block">Drainage Cleaning</label>
+            <label className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                checked={form.drainage}
+                onChange={(e) =>
+                  setForm({ ...form, drainage: e.target.checked })
+                }
+              />
+              Drainage Cleaning (+£20)
+            </label>
 
             <label className="font-semibold mt-6 block">Extras</label>
             <div className="grid gap-3 mt-3">
@@ -229,35 +344,40 @@ Please confirm availability.
           <div>
             <label className="font-semibold">Full Name</label>
             <input
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
+              placeholder="Enter your full name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
 
             <label className="font-semibold mt-6 block">Phone Number</label>
             <input
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
+              placeholder="e.g. 07712 345678"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
 
             <label className="font-semibold mt-6 block">Email</label>
             <input
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
+              placeholder="e.g. name@example.com"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
 
             <label className="font-semibold mt-6 block">Address</label>
             <input
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
+              placeholder="Enter your full address"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
             />
 
             <label className="font-semibold mt-6 block">Postcode</label>
             <input
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
+              placeholder="e.g. SE13 5XX"
               value={form.postcode}
               onChange={(e) => setForm({ ...form, postcode: e.target.value })}
             />
@@ -265,7 +385,7 @@ Please confirm availability.
             <label className="font-semibold mt-6 block">Booking Date</label>
             <input
               type="date"
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
               value={form.bookingDate}
               onChange={(e) =>
                 setForm({ ...form, bookingDate: e.target.value })
@@ -275,7 +395,7 @@ Please confirm availability.
             <label className="font-semibold mt-6 block">Booking Time</label>
             <input
               type="time"
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
               value={form.bookingTime}
               onChange={(e) =>
                 setForm({ ...form, bookingTime: e.target.value })
@@ -284,7 +404,8 @@ Please confirm availability.
 
             <label className="font-semibold mt-6 block">Notes</label>
             <textarea
-              className="w-full mt-2 p-3 border rounded-md"
+              className={inputStyle}
+              placeholder="Any special instructions?"
               rows={4}
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
@@ -295,16 +416,33 @@ Please confirm availability.
         {/* PRICE */}
         <div className="text-center mt-10">
           <h2 className="text-2xl font-bold">Estimated Price</h2>
-          <p className="text-4xl font-bold text-green-600 mt-3">£{totalPrice}</p>
+
+          {typeof totalPrice === "string" ? (
+            <p className="text-xl font-bold text-red-600 mt-3">
+              {totalPrice}
+            </p>
+          ) : (
+            <p className="text-4xl font-bold text-green-600 mt-3">
+              £{totalPrice}
+            </p>
+          )}
         </div>
 
-        {/* BOOK NOW BUTTON */}
-        <div className="text-center mt-10">
+        {/* BUTTONS */}
+        <div className="text-center mt-10 flex justify-center gap-4">
           <a
             href={whatsappMessage()}
             className="bg-green-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-green-700"
           >
             BOOK NOW
+          </a>
+
+          <a
+            href="YOUR_PAYPAL_LINK_HERE"
+            target="_blank"
+            className="bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition"
+          >
+            Pay Now
           </a>
         </div>
       </div>

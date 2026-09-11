@@ -54,7 +54,7 @@ export default function Home() {
               href="/pricing"
               className="border border-white px-5 py-3 rounded-md text-sm hover:bg-white hover:text-slate-900 shadow-md"
             >
-              View Pricing
+              Get Started
             </a>
           </motion.div>
         </motion.div>
