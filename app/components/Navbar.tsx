@@ -13,8 +13,8 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
 
         {/* LOGO */}
-        <Link href="/" className="text-green-400 text-2xl font-bold ">
-         Cleanit
+        <Link href="/" className="text-green-400 text-2xl font-bold">
+          Cleanit
         </Link>
 
         {/* LINKS */}
@@ -22,28 +22,21 @@ export default function Navbar() {
           <Link href="/" className="hover:text-slate-900">Home</Link>
           <Link href="/services" className="hover:text-slate-900">Services</Link>
           <Link href="/pricing" className="hover:text-slate-900">Pricing</Link>
-          <Link href="/gallery" className="hover:text-slate-900">Gallery</Link>
-         
-
+          <Link href="/gallery" className="hover:text-slate-900 hover:bg-green-400 rounded">Gallery</Link>
           <Link href="/contact" className="hover:text-slate-900">Contact</Link>
-          <a href="/about" className="hover:text-slate-600">About</a>
-        <a href="/testimonials" className="hover:text-slate-600">Testimonials</a>
-        <a href="/faq" className="hover:text-slate-600">FAQ</a>
+          <Link href="/about" className="hover:text-slate-600">About</Link>
+          <Link href="/testimonials" className="hover:text-slate-600">Testimonials</Link>
+          <Link href="/faq" className="hover:text-slate-600">FAQ</Link>
         </div>
-        
-        
-<a href="/book" className="bg-green-400 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-slate-800">Book Now</a>
 
-
-
-
-        {/* CTA */}
-        <a
-          href="https://wa.me/447735541705"
-          className="bg-slate-900 text-white px-2 py-2 rounded-md text-sm font-semibold hover:bg-green-400"
+        {/* BOOK NOW → Pricing */}
+        <Link
+          href="/pricing"
+          className="bg-green-400 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-slate-800"
         >
-          Whatsapp Bookings
-        </a>
+          Book Now
+        </Link>
+
       </div>
     </motion.nav>
   );

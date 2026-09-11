@@ -13,14 +13,20 @@ type ServiceType =
 
 type PricingForm = {
   service: ServiceType;
+  propertyType: string;
   hours: number;
   rooms: number;
   bathrooms: number;
+  toilets: number;
   extras: string[];
   notes: string;
   name: string;
   phone: string;
   email: string;
+  address: string;
+  postcode: string;
+  bookingDate: string;
+  bookingTime: string;
 };
 
 const extraOptions = [
@@ -44,14 +50,20 @@ const serviceRates: Record<ServiceType, number> = {
 export default function PricingPage() {
   const [form, setForm] = useState<PricingForm>({
     service: "",
+    propertyType: "",
     hours: 1,
     rooms: 0,
     bathrooms: 0,
+    toilets: 0,
     extras: [],
     notes: "",
     name: "",
     phone: "",
     email: "",
+    address: "",
+    postcode: "",
+    bookingDate: "",
+    bookingTime: "",
   });
 
   const toggleExtra = (extra: string) => {
@@ -67,6 +79,7 @@ export default function PricingPage() {
     let base = form.service ? serviceRates[form.service] * form.hours : 0;
     base += form.rooms * 5;
     base += form.bathrooms * 10;
+    base += form.toilets * 5;
 
     form.extras.forEach((extra) => {
       const item = extraOptions.find((x) => x.name === extra);
@@ -80,22 +93,33 @@ export default function PricingPage() {
 
   const whatsappMessage = () => {
     const msg = `
-Cleaning Quote Request
+📄 Cleaning Booking Request
 
-Name: ${form.name}
-Phone: ${form.phone}
-Email: ${form.email}
+👤 Name: ${form.name}
+📞 Phone: ${form.phone}
+📧 Email: ${form.email}
 
-Service: ${form.service}
-Hours: ${form.hours}
-Rooms: ${form.rooms}
-Bathrooms: ${form.bathrooms}
+🏠 Address: ${form.address}
+🔢 Postcode: ${form.postcode}
+🏢 Property Type: ${form.propertyType}
 
-Extras: ${form.extras.join(", ") || "None"}
+🧹 Service Type: ${form.service}
+⏱ Hours Needed: ${form.hours}
 
-Notes: ${form.notes || "None"}
+🛏 Rooms: ${form.rooms}
+🚿 Bathrooms: ${form.bathrooms}
+🚽 Toilets: ${form.toilets}
 
-Total Estimated Price: £${totalPrice}
+✨ Extras: ${form.extras.join(", ") || "None"}
+
+📅 Booking Date: ${form.bookingDate}
+⏰ Booking Time: ${form.bookingTime}
+
+📝 Notes: ${form.notes || "None"}
+
+💷 Total Estimated Price: £${totalPrice}
+
+Please confirm availability.
     `;
 
     return `https://wa.me/447735541705?text=${encodeURIComponent(msg)}`;
@@ -105,17 +129,17 @@ Total Estimated Price: £${totalPrice}
     <div className="min-h-screen bg-slate-100 py-16 px-6">
       <div className="max-w-4xl mx-auto bg-white p-10 rounded-xl shadow-lg">
         <h1 className="text-3xl font-bold text-slate-900 text-center">
-          Instant Cleaning Price Calculator
+          Instant Cleaning Price & Booking
         </h1>
 
         <p className="text-center text-slate-600 mt-2">
-          Choose your service and get an instant price estimate.
+          Fill in your details to get an instant quote and book your cleaning.
         </p>
 
         <div className="mt-10 grid md:grid-cols-2 gap-8">
           {/* LEFT SIDE */}
           <div>
-            <label className="font-semibold text-slate-700">Service Type</label>
+            <label className="font-semibold">Service Type</label>
             <select
               className="w-full mt-2 p-3 border rounded-md"
               value={form.service}
@@ -133,9 +157,16 @@ Total Estimated Price: £${totalPrice}
               )}
             </select>
 
-            <label className="font-semibold text-slate-700 mt-6 block">
-              Hours Needed
-            </label>
+            <label className="font-semibold mt-6 block">Property Type</label>
+            <input
+              className="w-full mt-2 p-3 border rounded-md"
+              value={form.propertyType}
+              onChange={(e) =>
+                setForm({ ...form, propertyType: e.target.value })
+              }
+            />
+
+            <label className="font-semibold mt-6 block">Hours Needed</label>
             <input
               type="number"
               min={1}
@@ -146,9 +177,7 @@ Total Estimated Price: £${totalPrice}
               }
             />
 
-            <label className="font-semibold text-slate-700 mt-6 block">
-              Number of Rooms
-            </label>
+            <label className="font-semibold mt-6 block">Rooms</label>
             <input
               type="number"
               min={0}
@@ -159,9 +188,7 @@ Total Estimated Price: £${totalPrice}
               }
             />
 
-            <label className="font-semibold text-slate-700 mt-6 block">
-              Number of Bathrooms
-            </label>
+            <label className="font-semibold mt-6 block">Bathrooms</label>
             <input
               type="number"
               min={0}
@@ -172,10 +199,19 @@ Total Estimated Price: £${totalPrice}
               }
             />
 
-            <label className="font-semibold text-slate-700 mt-6 block">
-              Extras
-            </label>
-            <div className="grid grid-cols-1 gap-3 mt-3">
+            <label className="font-semibold mt-6 block">Toilets</label>
+            <input
+              type="number"
+              min={0}
+              className="w-full mt-2 p-3 border rounded-md"
+              value={form.toilets}
+              onChange={(e) =>
+                setForm({ ...form, toilets: Number(e.target.value) })
+              }
+            />
+
+            <label className="font-semibold mt-6 block">Extras</label>
+            <div className="grid gap-3 mt-3">
               {extraOptions.map((extra) => (
                 <label key={extra.name} className="flex items-center gap-2">
                   <input
@@ -191,34 +227,62 @@ Total Estimated Price: £${totalPrice}
 
           {/* RIGHT SIDE */}
           <div>
-            <label className="font-semibold text-slate-700">Your Name</label>
+            <label className="font-semibold">Full Name</label>
             <input
               className="w-full mt-2 p-3 border rounded-md"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
 
-            <label className="font-semibold text-slate-700 mt-6 block">
-              Phone Number
-            </label>
+            <label className="font-semibold mt-6 block">Phone Number</label>
             <input
               className="w-full mt-2 p-3 border rounded-md"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
 
-            <label className="font-semibold text-slate-700 mt-6 block">
-              Email Address
-            </label>
+            <label className="font-semibold mt-6 block">Email</label>
             <input
               className="w-full mt-2 p-3 border rounded-md"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
 
-            <label className="font-semibold text-slate-700 mt-6 block">
-              Additional Notes
-            </label>
+            <label className="font-semibold mt-6 block">Address</label>
+            <input
+              className="w-full mt-2 p-3 border rounded-md"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+            />
+
+            <label className="font-semibold mt-6 block">Postcode</label>
+            <input
+              className="w-full mt-2 p-3 border rounded-md"
+              value={form.postcode}
+              onChange={(e) => setForm({ ...form, postcode: e.target.value })}
+            />
+
+            <label className="font-semibold mt-6 block">Booking Date</label>
+            <input
+              type="date"
+              className="w-full mt-2 p-3 border rounded-md"
+              value={form.bookingDate}
+              onChange={(e) =>
+                setForm({ ...form, bookingDate: e.target.value })
+              }
+            />
+
+            <label className="font-semibold mt-6 block">Booking Time</label>
+            <input
+              type="time"
+              className="w-full mt-2 p-3 border rounded-md"
+              value={form.bookingTime}
+              onChange={(e) =>
+                setForm({ ...form, bookingTime: e.target.value })
+              }
+            />
+
+            <label className="font-semibold mt-6 block">Notes</label>
             <textarea
               className="w-full mt-2 p-3 border rounded-md"
               rows={4}
@@ -228,19 +292,19 @@ Total Estimated Price: £${totalPrice}
           </div>
         </div>
 
-        {/* TOTAL PRICE */}
+        {/* PRICE */}
         <div className="text-center mt-10">
-          <h2 className="text-2xl font-bold text-slate-900">Estimated Price</h2>
+          <h2 className="text-2xl font-bold">Estimated Price</h2>
           <p className="text-4xl font-bold text-green-600 mt-3">£{totalPrice}</p>
         </div>
 
-        {/* WHATSAPP BUTTON */}
+        {/* BOOK NOW BUTTON */}
         <div className="text-center mt-10">
           <a
             href={whatsappMessage()}
-            className="bg-slate-900 text-white px-6 py-3 rounded-md font-semibold hover:bg-slate-800"
+            className="bg-green-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-green-700"
           >
-            Send Quote to WhatsApp
+            BOOK NOW
           </a>
         </div>
       </div>
