@@ -43,12 +43,7 @@ export default function Home() {
             transition={{ duration: 1.6 }}
             className="mt-8 flex flex-wrap gap-4"
           >
-            <a
-              href="https://wa.me/+447735541705"
-              className="bg-white text-slate-900 px-5 py-3 rounded-md font-semibold text-sm hover:bg-slate-200 shadow-md"
-            >
-              Book on WhatsApp
-            </a>
+            
 
             <a
               href="/pricing"
