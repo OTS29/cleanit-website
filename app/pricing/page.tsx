@@ -76,7 +76,7 @@ export default function PricingPage() {
   });
 
   const inputStyle =
-    "w-full mt-2 p-3 border border-slate-300 rounded-md bg-slate-50 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
+    "w-full mt-2 p-3 border border-blue-300 rounded-md bg-slate-50 text-gray-600 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
 
   // ⭐ Auto-set minimum hours based on rooms, bathrooms, toilets, condition, drainage
   const calculateMinimumHours = () => {
@@ -210,7 +210,7 @@ Please confirm availability.
         <div className="mt-10 grid md:grid-cols-2 gap-8">
           {/* LEFT SIDE */}
           <div>
-            <label className="font-semibold">Service Type</label>
+            <label className="font-semibold text-gray-900">Service Type</label>
             <select
               className={inputStyle}
               value={form.service}
@@ -228,7 +228,7 @@ Please confirm availability.
               )}
             </select>
 
-            <label className="font-semibold mt-6 block">Property Type</label>
+            <label className="font-semibold mt-6 block text-gray-900">Property Type</label>
             <input
               className={inputStyle}
               placeholder="e.g. Flat, House, Studio"
@@ -238,7 +238,7 @@ Please confirm availability.
               }
             />
 
-            <label className="font-semibold mt-6 block">Property Condition</label>
+            <label className="font-semibold mt-6 block text-gray-900">Property Condition</label>
             <select
               className={inputStyle}
               value={form.condition}
@@ -251,7 +251,7 @@ Please confirm availability.
               <option>Renovated</option>
             </select>
 
-            <label className="font-semibold mt-6 block">Supplies</label>
+            <label className="font-semibold mt-6 block text-gray-900">Supplies</label>
             <select
               className={inputStyle}
               value={form.supplies}
@@ -263,7 +263,7 @@ Please confirm availability.
               <option>We Provide</option>
             </select>
 
-            <label className="font-semibold mt-6 block">Hours Needed</label>
+            <label className="font-semibold mt-6 block text-gray-900">Hours Needed</label>
             <input
               type="number"
               min={calculateMinimumHours()}
@@ -274,7 +274,7 @@ Please confirm availability.
               }
             />
 
-            <label className="font-semibold mt-6 block">Rooms</label>
+            <label className="font-semibold mt-6 block text-gray-900">Rooms</label>
             <input
               type="number"
               min={0}
@@ -287,7 +287,7 @@ Please confirm availability.
               }
             />
 
-            <label className="font-semibold mt-6 block">Bathrooms</label>
+            <label className="font-semibold mt-6 block text-gray-900">Bathrooms</label>
             <input
               type="number"
               min={0}
@@ -300,7 +300,7 @@ Please confirm availability.
               }
             />
 
-            <label className="font-semibold mt-6 block">Toilets</label>
+            <label className="font-semibold mt-6 block text-gray-900">Toilets</label>
             <input
               type="number"
               min={0}
@@ -313,8 +313,8 @@ Please confirm availability.
               }
             />
 
-            <label className="font-semibold mt-6 block">Drainage Cleaning</label>
-            <label className="flex items-center gap-2 mt-2">
+            <label className="font-semibold mt-6 block text-gray-900">Drainage Cleaning</label>
+            <label className="flex items-center gap-2 mt-2 text-gray-800">
               <input
                 type="checkbox"
                 checked={form.drainage}
@@ -325,8 +325,8 @@ Please confirm availability.
               Drainage Cleaning (+£20)
             </label>
 
-            <label className="font-semibold mt-6 block">Extras</label>
-            <div className="grid gap-3 mt-3">
+            <label className="font-semibold mt-6 block text-gray-900">Extras</label>
+            <div className="grid gap-3 mt-3 text-gray-900">
               {extraOptions.map((extra) => (
                 <label key={extra.name} className="flex items-center gap-2">
                   <input
@@ -342,7 +342,7 @@ Please confirm availability.
 
           {/* RIGHT SIDE */}
           <div>
-            <label className="font-semibold">Full Name</label>
+            <label className="font-semibold text-gray-900">Full Name</label>
             <input
               className={inputStyle}
               placeholder="Enter your full name"
@@ -350,7 +350,7 @@ Please confirm availability.
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
 
-            <label className="font-semibold mt-6 block">Phone Number</label>
+            <label className="font-semibold mt-6 block text-gray-900">Phone Number</label>
             <input
               className={inputStyle}
               placeholder="e.g. 07712 345678"
@@ -358,7 +358,7 @@ Please confirm availability.
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
 
-            <label className="font-semibold mt-6 block">Email</label>
+            <label className="font-semibold mt-6 block text-gray-900">Email</label>
             <input
               className={inputStyle}
               placeholder="e.g. name@example.com"
@@ -366,7 +366,7 @@ Please confirm availability.
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
 
-            <label className="font-semibold mt-6 block">Address</label>
+            <label className="font-semibold mt-6 block text-gray-900">Address</label>
             <input
               className={inputStyle}
               placeholder="Enter your full address"
@@ -374,7 +374,7 @@ Please confirm availability.
               onChange={(e) => setForm({ ...form, address: e.target.value })}
             />
 
-            <label className="font-semibold mt-6 block">Postcode</label>
+            <label className="font-semibold mt-6 block text-gray-900">Postcode</label>
             <input
               className={inputStyle}
               placeholder="e.g. SE13 5XX"
@@ -382,7 +382,7 @@ Please confirm availability.
               onChange={(e) => setForm({ ...form, postcode: e.target.value })}
             />
 
-            <label className="font-semibold mt-6 block">Booking Date</label>
+            <label className="font-semibold mt-6 block text-gray-900">Booking Date</label>
             <input
               type="date"
               className={inputStyle}
@@ -392,7 +392,7 @@ Please confirm availability.
               }
             />
 
-            <label className="font-semibold mt-6 block">Booking Time</label>
+            <label className="font-semibold mt-6 block text-gray-900">Booking Time</label>
             <input
               type="time"
               className={inputStyle}
@@ -402,7 +402,7 @@ Please confirm availability.
               }
             />
 
-            <label className="font-semibold mt-6 block">Notes</label>
+            <label className="font-semibold mt-6 block text-gray-900">Notes</label>
             <textarea
               className={inputStyle}
               placeholder="Any special instructions?"
@@ -415,7 +415,7 @@ Please confirm availability.
 
         {/* PRICE */}
         <div className="text-center mt-10">
-          <h2 className="text-2xl font-bold">Estimated Price</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Estimated Price</h2>
 
           {typeof totalPrice === "string" ? (
             <p className="text-xl font-bold text-red-600 mt-3">
