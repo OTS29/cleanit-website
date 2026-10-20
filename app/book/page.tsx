@@ -20,9 +20,7 @@ export default function BookingPage() {
   const [submitted, setSubmitted] = useState(false);
 
   // ⭐ Save booking to admin dashboard
-  const saveBookingToAdmin = (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const saveBookingToAdmin = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
 
     const newBooking: Booking = {
@@ -41,6 +39,35 @@ export default function BookingPage() {
     const saved = JSON.parse(localStorage.getItem("bookings") || "[]");
     saved.push(newBooking);
     localStorage.setItem("bookings", JSON.stringify(saved));
+
+    // ⭐ Send confirmation email automatically
+    sendConfirmationEmail(newBooking);
+  };
+
+  // ⭐ Email sender
+  const sendConfirmationEmail = async (booking: Booking) => {
+    const message = `
+Name: ${booking.name}
+Email: ${booking.email}
+Phone: ${booking.phone}
+Address: ${booking.address}
+
+Service: ${booking.service}
+Date: ${booking.date}
+Time: ${booking.time}
+
+Notes: ${booking.notes || "None"}
+    `;
+
+    await fetch("/api/send-confirmation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerEmail: booking.email,
+        customerName: booking.name,
+        message,
+      }),
+    });
   };
 
   return (
