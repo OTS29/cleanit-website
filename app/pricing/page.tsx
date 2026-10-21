@@ -405,7 +405,7 @@ Please confirm availability.
             <label className="font-semibold mt-6 block text-gray-900">Notes</label>
             <textarea
               className={inputStyle}
-              placeholder="Any special instructions?"
+              placeholder="Type any special instructions?"
               rows={4}
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
